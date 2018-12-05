@@ -3,9 +3,9 @@
 
 /* Search the fingerprint database for a print */
 
-/*  pin #2 is IN from sensor (GREEN wire)
-    pin #3 is OUT from arduino  (WHITE/YELLOW wire)
-*/
+/*  pin #2 is IN from sensor
+ *  pin #3 is OUT from arduino (3.3V I/O!)
+ */
 SoftwareSerial fserial(2, 3);
 
 GT5X finger(&fserial);
@@ -26,6 +26,9 @@ void setup()
     }
     
     Serial.println("Place a finger to search.");
+
+    /* turn on led for print capture */
+    finger.set_led(true);
 }
 
 
@@ -33,7 +36,7 @@ void loop()
 {
     if (!finger.is_pressed())
         return;
-    
+
     uint16_t rc = finger.capture_finger();  
     if (rc != GT5X_OK)
         return;

@@ -127,7 +127,7 @@ uint16_t GT5X::get_cmd_response(uint32_t * params) {
                 
                 last_read = millis();
                 uint16_t temp;
-                port->readBytes((uint8_t *)temp, 2);
+                port->readBytes((uint8_t *)&temp, 2);
                 
                 uint16_t chksum = GT5X_CMD_START_CODE1 + GT5X_CMD_START_CODE2
                                   + (uint8_t)GT5X_DEVICEID + (GT5X_DEVICEID >> 8);
@@ -242,7 +242,7 @@ uint16_t GT5X::get_data_response(uint8_t * data, uint16_t len, Stream * outStrea
                 
                 last_read = millis();
                 uint16_t temp;
-                port->readBytes((uint8_t *)temp, 2);
+                port->readBytes((uint8_t *)&temp, 2);
                 
                 GT5X_DEBUG_PRINTLN("\r\n[+]Read complete");
                 /* without chksum */
@@ -407,12 +407,11 @@ bool GT5X::is_pressed(void) {
     
     write_cmd_packet(cmd, params);
     uint16_t rc = get_cmd_response(&params);
-    if (rc == GT5X_ACK)
-        return GT5X_OK;
-    else if (rc == GT5X_TIMEOUT)
+    if (rc == GT5X_ACK) {
+        return params == 0;
+    }
+    else
         return rc;
-    
-    return params == 0;
 }
 
 uint16_t GT5X::delete_id(uint16_t fid) {

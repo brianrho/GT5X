@@ -3,8 +3,8 @@
 
 /* Enroll fingerprints */
 
-/*  pin #2 is IN from sensor (GREEN wire)
- *  pin #3 is OUT from arduino  (WHITE/YELLOW wire)
+/*  pin #2 is IN from sensor
+ *  pin #3 is OUT from arduino (3.3V I/O!)
  */
 SoftwareSerial fserial(2, 3);
 
@@ -19,7 +19,7 @@ void setup()
 
     if (finger.begin(&info)) {
         Serial.println("Found fingerprint sensor!");
-        Serial.print("Firmware Version: "); Serial.println(info.fwversion);
+        Serial.print("Firmware Version: "); Serial.println(info.fwversion, HEX);
     } else {
         Serial.println("Did not find fingerprint sensor :(");
         while (1) yield();
@@ -28,6 +28,8 @@ void setup()
 
 void loop()
 {
+    while (Serial.read() != -1);  // clear buffer
+    
     Serial.println("Enter the finger ID # you want to enroll...");
     uint16_t fid = 0;
     while (true) {
@@ -44,20 +46,20 @@ void loop()
     
     enroll_finger(fid);
     Serial.println();
-    while (Serial.read() != -1);  // clear buffer
 }
 
 bool is_enrolled(uint16_t fid) {
     uint16_t rc = finger.is_enrolled(fid);
     switch (rc) {
         case GT5X_OK:
-            Serial.println("ID is used.");
+            Serial.println("ID is used!");
             return true;
         case GT5X_NACK_IS_NOT_USED:
-            Serial.println("ID unused.");
+            Serial.print("ID "); Serial.print(fid);
+            Serial.println(" is free.");
             return false;
         default:
-            Serial.print("Error code: "); Serial.println(rc);
+            Serial.print("Error code: 0x"); Serial.println(rc, HEX);
             return true;
     }
 }
@@ -69,10 +71,14 @@ void enroll_finger(uint16_t fid) {
             Serial.print("Enrolling ID #"); Serial.println(fid);
             break;
         default:
-            Serial.print("Error code: "); Serial.println(p);
+            Serial.print("Error code: 0x"); Serial.println(p, HEX);
             return;
     }
-    
+
+    /* turn on led for print capture */
+    finger.set_led(true);
+
+    /* scan finger 3 times */
     for (int scan = 1; scan < 4; scan++) {
         Serial.println("Place your finger.");
         p = finger.capture_finger(true);
@@ -87,7 +93,7 @@ void enroll_finger(uint16_t fid) {
                     Serial.println(".");
                     break;
                 default:
-                    Serial.print("Error code: "); Serial.println(p);
+                    Serial.print("Error code: 0x"); Serial.println(p, HEX);
                     return;
             }
             yield();
@@ -100,7 +106,7 @@ void enroll_finger(uint16_t fid) {
                 Serial.println(" complete.");
                 break;
             default:
-                Serial.print("Error code: "); Serial.println(p);
+                Serial.print("Error code: 0x"); Serial.println(p, HEX);
                 return;
         }
 
@@ -111,5 +117,8 @@ void enroll_finger(uint16_t fid) {
         Serial.println();
     }
 
-    Serial.print("Enroll complete.");
+    /* wr're done so turn it off */
+    finger.set_led(false);
+    
+    Serial.println("Enroll complete.");
 }

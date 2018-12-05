@@ -4,6 +4,9 @@
 #ifndef GT5X_H
 #define GT5X_H
 
+/* uncomment to enable debug output */
+//#define GT5X_ENABLE_DEBUG
+
 #define GT5X_BUFLEN     32
 
 /* 12-byte command packet */
