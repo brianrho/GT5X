@@ -9,43 +9,40 @@
 
 #define GT5X_BUFLEN     32
 
-/* 12-byte command packet */
-#define GT5X_NOT_SET                        0x00    // Default value for enum. Scanner will return error if sent this.
-#define GT5X_OPEN                           0x01    // Open Initialization
-#define GT5X_CLOSE                          0x02    // Close Termination
-#define GT5X_USBINTCHECK                    0x03    // UsbInternalCheck Check if the connected USB device is valid
-#define GT5X_CHANGEBAUDRATE                 0x04    // Change UART baud rate
-#define GT5X_SETIAPMODE                     0x05    // SetIAPMode Enter IAP Mode In this mode, FW Upgrade is available
-#define GT5X_CMOSLED                        0x12    // CmosLed Control
-#define GT5X_GETENROLLCNT                   0x20    // Get enrolled fingerprint count
-#define GT5X_CHECKENROLLED                  0x21    // Check whether the specified ID is already enrolled
-#define GT5X_STARTENROLL                    0x22    // Start an enrollment
-#define GT5X_ENROLL1                        0x23    // Make 1st template for an enrollment
-#define GT5X_ENROLL2                        0x24    // Make 2nd template for an enrollment
-#define GT5X_ENROLL3                        0x25    // Make 3rd template for an enrollment, merge into one template, save
-#define GT5X_ISPRESSFINGER                  0x26    // Check if a finger is placed on the sensor
-#define GT5X_DELETEID                       0x40    // Delete the fingerprint with the specified ID
-#define GT5X_DELETEALL                      0x41    // Delete all fingerprints from the database
-#define GT5X_VERIFY1_1                      0x50    // Verify captured fingerprint image with a specified ID
-#define GT5X_IDENTIFY1_N                    0x51    // Search database for a captured finger
-#define GT5X_VERIFYTEMPLATE1_1              0x52    // Match a given template with another template in the database
-#define GT5X_IDENTIFYTEMPLATE1_N            0x53    // Search database for a given template
-#define GT5X_CAPTUREFINGER                  0x60    // Capture a fingerprint image (256 x 256) with the sensor
-#define GT5X_MAKETEMPLATE                   0x61    // Make template for transmission
-#define GT5X_GETIMAGE                       0x62    // Download the captured fingerprint image(256x256)
-#define GT5X_GETRAWIMAGE                    0x63    // Capture & download raw fingerprint image(320x240)
-#define GT5X_GETTEMPLATE                    0x70    // Download the template at a specified ID
-#define GT5X_SETTEMPLATE                    0x71    // Upload a template to a specified ID
-#define GT5X_GETDATABASESTART               0x72    // Start database download, obsolete
-#define GT5X_GETDATABASEEND                 0x73    // End database download, obsolete
-#define GT5X_UPGRADEFIRMWARE                0x80    // Not supported
-#define GT5X_UPGRADEISOCDIMAGE              0x81    // Not supported
-#define GT5X_ACK                            0x30    // Acknowledge
-#define GT5X_NACK                           0x31    // Non-acknowledge
+/* commands */   
+#define GT5X_OPEN                           0x01    
+#define GT5X_CLOSE                          0x02    
+#define GT5X_USBINTCHECK                    0x03    
+#define GT5X_CHANGEBAUDRATE                 0x04    
+#define GT5X_SETIAPMODE                     0x05    
+#define GT5X_CMOSLED                        0x12    
+#define GT5X_GETENROLLCNT                   0x20    
+#define GT5X_CHECKENROLLED                  0x21    
+#define GT5X_STARTENROLL                    0x22    
+#define GT5X_ENROLL1                        0x23    
+#define GT5X_ENROLL2                        0x24    
+#define GT5X_ENROLL3                        0x25    
+#define GT5X_ISPRESSFINGER                  0x26    
+#define GT5X_DELETEID                       0x40    
+#define GT5X_DELETEALL                      0x41    
+#define GT5X_VERIFY1_1                      0x50    
+#define GT5X_IDENTIFY1_N                    0x51    
+#define GT5X_VERIFYTEMPLATE1_1              0x52    
+#define GT5X_IDENTIFYTEMPLATE1_N            0x53    
+#define GT5X_CAPTUREFINGER                  0x60    
+#define GT5X_MAKETEMPLATE                   0x61    
+#define GT5X_GETIMAGE                       0x62    
+#define GT5X_GETRAWIMAGE                    0x63    
+#define GT5X_GETTEMPLATE                    0x70    
+#define GT5X_SETTEMPLATE                    0x71    
+#define GT5X_GETDATABASESTART               0x72    
+#define GT5X_GETDATABASEEND                 0x73    
+#define GT5X_UPGRADEFIRMWARE                0x80    
+#define GT5X_UPGRADEISOCDIMAGE              0x81    
+#define GT5X_ACK                            0x30    
+#define GT5X_NACK                           0x31    
 
-/*
-	Response_Packet represents the returned data from the finger print scanner 
-*/
+/* NACK codes */
 
 #define GT5X_OK                             0x0000
 #define GT5X_NACK_TIMEOUT                   0x1001
@@ -81,6 +78,7 @@
 /* returned whenever we time out while reading */
 #define GT5X_TIMEOUT                        0xFFFF
 
+/* default uart read timeout */
 #define GT5X_DEFAULT_TIMEOUT                1000
 
 class Stream;
