@@ -9,6 +9,9 @@
 
 #define GT5X_BUFLEN     32
 
+#define GT5X_TEMPLATESZ         498
+#define GT5X_IMAGESZ            52116   /* 258 x 202 */
+ 
 /* commands */   
 #define GT5X_OPEN                           0x01    
 #define GT5X_CLOSE                          0x02    
@@ -89,6 +92,12 @@ typedef struct {
     uint8_t sn[16];
 } GT5X_DeviceInfo;
 
+/* possible destinations for template/image data read from the module */
+enum {
+    GT5X_OUTPUT_TO_STREAM,
+    GT5X_OUTPUT_TO_BUFFER
+};
+
 class GT5X {
     public:
         GT5X(Stream * ss);
@@ -107,6 +116,11 @@ class GT5X {
         uint16_t verify_finger_with_template(uint16_t fid);
         uint16_t search_database(uint16_t * fid);
         uint16_t capture_finger(bool highquality = false);
+        
+        uint16_t get_template(uint16_t fid);
+        uint16_t get_image(void);
+        
+        bool read_raw(uint8_t outType, void * out, uint16_t to_read);
         
     private:
         void write_cmd_packet(uint16_t cmd, uint32_t params);

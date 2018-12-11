@@ -485,3 +485,59 @@ uint16_t GT5X::capture_finger(bool highquality) {
     
     return params;
 }
+
+uint16_t GT5X::get_template(uint16_t fid) {
+    uint16_t cmd = GT5X_GETTEMPLATE;
+    uint32_t params = fid;
+    
+    write_cmd_packet(cmd, params);
+    uint16_t rc = get_cmd_response(&params);
+    if (rc == GT5X_ACK)
+        return GT5X_OK;
+    else if (rc == GT5X_TIMEOUT)
+        return rc;
+    
+    return params;
+}
+
+uint16_t GT5X::get_image(void) {
+    uint16_t cmd = GT5X_GETIMAGE;
+    uint32_t params = 0;
+    
+    write_cmd_packet(cmd, params);
+    uint16_t rc = get_cmd_response(&params);
+    if (rc == GT5X_ACK)
+        return GT5X_OK;
+    else if (rc == GT5X_TIMEOUT)
+        return rc;
+    
+    return params;
+}
+
+bool GT5X::read_raw(uint8_t outType, void * out, uint16_t to_read) {
+    Stream * outStream;
+    uint8_t * outBuf;
+    
+    if (outType == GT5X_OUTPUT_TO_BUFFER)
+        outBuf = (uint8_t *)out;
+    else if (outType == GT5X_OUTPUT_TO_STREAM)
+        outStream = (Stream *)out;
+    else
+        return false;
+    
+    uint16_t rc;
+    
+    if (outType == GT5X_OUTPUT_TO_BUFFER)
+        rc = get_data_response(outBuf, to_read);
+    else if (outType == GT5X_OUTPUT_TO_STREAM)
+        rc = get_data_response(NULL, to_read, outStream);
+    
+    /* check the length */
+    if (rc != to_read) {
+        GT5X_DEBUG_PRINT("Read data failed: ");
+        GT5X_DEBUG_PRINTLN(len);
+        return false;
+    }
+    
+    return true;
+}
