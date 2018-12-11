@@ -3,18 +3,17 @@
 
 import serial, time
 
-BG_BYTE = 161
+BG_BYTE = 66
 
-TOTAL_WIDTH = 256
-TOTAL_HEIGHT = 202
+TOTAL_WIDTH = 320
+TOTAL_HEIGHT = 240
 
-WIDTH = 258
-HEIGHT = 202
+WIDTH = 160
+HEIGHT = 120
 DEPTH = 8
 PAYLOAD_SZ = WIDTH * HEIGHT
 
 image_raw = [0] * PAYLOAD_SZ
-image_rotated = [0] * PAYLOAD_SZ
 image_final = [BG_BYTE] * (TOTAL_WIDTH * TOTAL_HEIGHT)
 
 portSettings = ['', 0]
@@ -124,19 +123,13 @@ def getPrint():
                     return False
                 image_raw[i] = byte[0]
 
-            # rotate (according to sdk)
+            # interpolate (ported directly from sdk)
             for row in range(HEIGHT):
                 for col in range(WIDTH):
-                    image_rotated[row*WIDTH + col] = image_raw[col*HEIGHT + row];
-
-            for row in range(HEIGHT):
-                x_startpos = 256*(row)
-                x_endpos = 256*(row) + 256
-
-                y_startpos = row * 258 + 1
-                y_endpos = row * 258 + 1 + 256
-                
-                image_final[x_startpos:x_endpos] = image_rotated[y_startpos:y_endpos]
+                    image_final[TOTAL_WIDTH*(2*row+0)+(2*col+0)] = image_raw[row*160+col]
+                    image_final[TOTAL_WIDTH*(2*row+0)+(2*col+1)] = image_raw[row*160+col]
+                    image_final[TOTAL_WIDTH*(2*row+1)+(2*col+0)] = image_raw[row*160+col]
+                    image_final[TOTAL_WIDTH*(2*row+1)+(2*col+1)] = image_raw[row*160+col]
 
             for byte in image_final:
                 out.write(byte.to_bytes(1, byteorder='little'))

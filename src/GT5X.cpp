@@ -501,7 +501,7 @@ uint16_t GT5X::get_template(uint16_t fid) {
 }
 
 uint16_t GT5X::get_image(void) {
-    uint16_t cmd = GT5X_GETIMAGE;
+    uint16_t cmd = GT5X_GETRAWIMAGE;
     uint32_t params = 0;
     
     write_cmd_packet(cmd, params);

@@ -10,7 +10,7 @@
 #define GT5X_BUFLEN     32
 
 #define GT5X_TEMPLATESZ         498
-#define GT5X_IMAGESZ            52116   /* 258 x 202 */
+#define GT5X_IMAGESZ            19200   /* 160 x 120 */
  
 /* commands */   
 #define GT5X_OPEN                           0x01    
