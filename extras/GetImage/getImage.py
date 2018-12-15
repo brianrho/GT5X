@@ -126,10 +126,10 @@ def getPrint():
             # interpolate (ported directly from sdk)
             for row in range(HEIGHT):
                 for col in range(WIDTH):
-                    image_final[TOTAL_WIDTH*(2*row+0)+(2*col+0)] = image_raw[row*160+col]
-                    image_final[TOTAL_WIDTH*(2*row+0)+(2*col+1)] = image_raw[row*160+col]
-                    image_final[TOTAL_WIDTH*(2*row+1)+(2*col+0)] = image_raw[row*160+col]
-                    image_final[TOTAL_WIDTH*(2*row+1)+(2*col+1)] = image_raw[row*160+col]
+                    image_final[TOTAL_WIDTH*(2*row + 0) + (2*col + 0)] = image_raw[row*WIDTH + col]
+                    image_final[TOTAL_WIDTH*(2*row + 0) + (2*col + 1)] = image_raw[row*WIDTH + col]
+                    image_final[TOTAL_WIDTH*(2*row + 1) + (2*col + 0)] = image_raw[row*WIDTH + col]
+                    image_final[TOTAL_WIDTH*(2*row + 1) + (2*col + 1)] = image_raw[row*WIDTH + col]
 
             for byte in image_final:
                 out.write(byte.to_bytes(1, byteorder='little'))

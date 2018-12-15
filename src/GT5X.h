@@ -119,8 +119,10 @@ class GT5X {
         
         uint16_t get_template(uint16_t fid);
         uint16_t get_image(void);
+        uint16_t set_template(uint16_t fid, uint8_t check_duplicate = true);
         
         bool read_raw(uint8_t outType, void * out, uint16_t to_read);
+        uint16_t write_raw(uint8_t * data, uint16_t len, bool expect_response = false);
         
     private:
         void write_cmd_packet(uint16_t cmd, uint32_t params);

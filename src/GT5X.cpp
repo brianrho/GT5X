@@ -514,6 +514,20 @@ uint16_t GT5X::get_image(void) {
     return params;
 }
 
+uint16_t GT5X::set_template(uint16_t fid, uint8_t check_duplicate) {
+    uint16_t cmd = GT5X_SETTEMPLATE;
+    uint32_t params = check_duplicate ? fid : (fid & 0xff000000);
+    
+    write_cmd_packet(cmd, params);
+    uint16_t rc = get_cmd_response(&params);
+    if (rc == GT5X_ACK)
+        return GT5X_OK;
+    else if (rc == GT5X_TIMEOUT)
+        return rc;
+    
+    return params;
+}
+
 bool GT5X::read_raw(uint8_t outType, void * out, uint16_t to_read) {
     Stream * outStream;
     uint8_t * outBuf;
@@ -540,4 +554,35 @@ bool GT5X::read_raw(uint8_t outType, void * out, uint16_t to_read) {
     }
     
     return true;
+}
+
+uint16_t GT5X::write_raw(uint8_t * data, uint16_t len, bool expect_response) {
+    uint8_t preamble[] = {GT5X_DATA_START_CODE1, GT5X_DATA_START_CODE2, 
+                          (uint8_t)GT5X_DEVICEID, (uint8_t)(GT5X_DEVICEID >> 8)};
+    
+    uint16_t chksum = 0;
+    for (int i = 0; i < sizeof(preamble); i++) {
+        chksum += preamble[i];
+    }
+    
+    for (int i = 0; i < len; i++) {
+        chksum += data[i];
+    }
+    
+    port->write(preamble, sizeof(preamble));
+    port->write(data, len);
+    port->write((uint8_t *)&chksum, 2);
+    
+    if (expect_response) {
+        uint32_t params = 0;
+        uint16_t rc = get_cmd_response(&params);
+        if (rc == GT5X_ACK)
+            return GT5X_OK;
+        else if (rc == GT5X_TIMEOUT)
+            return rc;
+        
+        return params;
+    }
+    
+    return GT5X_OK;
 }
