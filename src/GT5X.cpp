@@ -147,7 +147,6 @@ uint16_t GT5X::get_cmd_response(uint32_t * params) {
                 }
                 
                 GT5X_DEBUG_PRINTLN("\r\n[+]Read complete");
-                /* without chksum */
                 return rcode;
             }
         }
@@ -162,7 +161,6 @@ uint16_t GT5X::get_data_response(uint8_t * data, uint16_t len, Stream * outStrea
     const uint16_t COMBINED_PACKET_HEADER = ((uint16_t)GT5X_DATA_START_CODE1 << 8) | GT5X_DATA_START_CODE2;
     
     uint16_t header = 0;
-    uint16_t rcode = 0;
     
     uint16_t remn = len;
     uint32_t last_read = millis();
@@ -244,8 +242,23 @@ uint16_t GT5X::get_data_response(uint8_t * data, uint16_t len, Stream * outStrea
                 uint16_t temp;
                 port->readBytes((uint8_t *)&temp, 2);
                 
+                if (outStream == NULL) {
+                    uint16_t chksum = GT5X_DATA_START_CODE1 + GT5X_DATA_START_CODE2
+                                      + (uint8_t)GT5X_DEVICEID + (GT5X_DEVICEID >> 8);
+                    
+                    /* walk backwards thru the data and add */                    
+                    for (int i = 0; i < len; i++) {
+                        chksum += *(--data);
+                    }
+                    
+                    if (temp != chksum) {
+                        state = GT5X_STATE_READ_HEADER;
+                        GT5X_DEBUG_PRINTLN("\r\n[+]Wrong chksum");
+                        continue;
+                    }
+                }
+                
                 GT5X_DEBUG_PRINTLN("\r\n[+]Read complete");
-                /* without chksum */
                 return len;
             }
         }
@@ -549,7 +562,7 @@ bool GT5X::read_raw(uint8_t outType, void * out, uint16_t to_read) {
     /* check the length */
     if (rc != to_read) {
         GT5X_DEBUG_PRINT("Read data failed: ");
-        GT5X_DEBUG_PRINTLN(len);
+        GT5X_DEBUG_PRINTLN(rc);
         return false;
     }
     
