@@ -45,9 +45,9 @@
 #define GT5X_ACK                            0x30    
 #define GT5X_NACK                           0x31    
 
-/* NACK codes */
+/* NACK error codes */
 
-#define GT5X_OK                             0x0000
+#define GT5X_OK                             0x1000
 #define GT5X_NACK_TIMEOUT                   0x1001
 #define GT5X_NACK_INVALID_BAUDRATE          0x1002
 #define GT5X_NACK_INVALID_POS               0x1003
@@ -66,8 +66,8 @@
 #define GT5X_NACK_CAPTURE_CANCELED          0x1010
 #define GT5X_NACK_INVALID_PARAM             0x1011
 #define GT5X_NACK_FINGER_IS_NOT_PRESSED     0x1012
-#define GT5X_INVALID                        0xFFFF
 
+/* command header stuff */
 #define GT5X_CMD_START_CODE1                0x55
 #define GT5X_CMD_START_CODE2                0xAA
 
@@ -104,6 +104,8 @@ class GT5X {
         bool begin(GT5X_DeviceInfo * info = NULL);
         bool end(void);
         
+        /* all output params and error codes are within 2 bytes
+           so uint16_t is good enough */
         uint16_t set_led(bool state);
         uint16_t set_baud_rate(uint32_t baud);
         uint16_t get_enrolled_count(uint16_t * fcnt);

@@ -1,12 +1,21 @@
-#include <SoftwareSerial.h>
+/* In case you have an ESP32 */
+#if defined(ARDUINO_ARCH_ESP32)
+    #include <HardwareSerial.h>
+#elif
+    #include <SoftwareSerial.h>
+#endif
+
 #include <GT5X.h>
 
 /* Enroll fingerprints */
 
-/*  pin #2 is IN from sensor
- *  pin #3 is OUT from arduino (3.3V I/O!)
- */
-SoftwareSerial fserial(2, 3);
+#if defined(ARDUINO_ARCH_ESP32)
+    /* select UART1 for ESP32 */
+    HardwareSerial fserial(1);
+#elif
+    /* RX = 2, TX = 3 */
+    SoftwareSerial fserial(2, 3);
+#endif
 
 GT5X finger(&fserial);
 GT5X_DeviceInfo info;
@@ -15,7 +24,13 @@ void setup()
 {
     Serial.begin(9600);
     Serial.println("ENROLL test");
-    fserial.begin(9600);
+
+    #if defined(ARDUINO_ARCH_ESP32)
+        /* RX = IO16, TX = IO17 */
+        fserial.begin(9600, SERIAL_8N1, 16, 17);
+    #elif
+        fserial.begin(9600);
+    #endif
 
     if (finger.begin(&info)) {
         Serial.println("Found fingerprint sensor!");

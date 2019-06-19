@@ -52,6 +52,9 @@ void GT5X::write_cmd_packet(uint16_t cmd, uint32_t params) {
     port->write((uint8_t *)&chksum, 2);
 }
 
+/* Any output parameter (or error code) is stored right back into params
+   and the Response ACK/NACK is returned */
+   
 uint16_t GT5X::get_cmd_response(uint32_t * params) {
     GT5X_State state = GT5X_STATE_READ_HEADER;
     const uint16_t COMBINED_PACKET_HEADER = ((uint16_t)GT5X_CMD_START_CODE1 << 8) | GT5X_CMD_START_CODE2;
@@ -88,6 +91,7 @@ uint16_t GT5X::get_cmd_response(uint32_t * params) {
                 uint16_t devid;
                 port->readBytes((uint8_t *)&devid, 2);
                 
+                /* check device id */
                 if (devid != GT5X_DEVICEID) {
                     state = GT5X_STATE_READ_HEADER;
                     GT5X_DEBUG_PRINTLN("[+]Wrong device ID");
@@ -103,6 +107,7 @@ uint16_t GT5X::get_cmd_response(uint32_t * params) {
                 if (port->available() < 4)
                     continue;
                 
+                /* store output parameter or error code */
                 last_read = millis();
                 port->readBytes((uint8_t *)params, 4);
                 
@@ -114,6 +119,7 @@ uint16_t GT5X::get_cmd_response(uint32_t * params) {
                 if (port->available() < 2)
                     continue;
                 
+                /* read ACK/NACK */
                 last_read = millis();
                 port->readBytes((uint8_t *)&rcode, 2);
                 
@@ -140,6 +146,7 @@ uint16_t GT5X::get_cmd_response(uint32_t * params) {
                 chksum += rcode >> 8;
                 chksum += (uint8_t)rcode;
                 
+                /* compare chksum */
                 if (temp != chksum) {
                     state = GT5X_STATE_READ_HEADER;
                     GT5X_DEBUG_PRINTLN("\r\n[+]Wrong chksum");
@@ -152,7 +159,7 @@ uint16_t GT5X::get_cmd_response(uint32_t * params) {
         }
     }
     
-    GT5X_DEBUG_PRINTLN();
+    GT5X_DEBUG_PRINTLN("[+]Timeout.");
     return GT5X_TIMEOUT;
 }
 
@@ -332,9 +339,11 @@ uint16_t GT5X::set_baud_rate(uint32_t baud) {
     else if (rc == GT5X_TIMEOUT)
         return rc;
     
+    /* returns the NACK error code, same purpose in other functions */
     return params;
 }
 
+/* get number of enrolled templates */
 uint16_t GT5X::get_enrolled_count(uint16_t * fcnt) {
     uint16_t cmd = GT5X_GETENROLLCNT;
     uint32_t params = 0;
@@ -455,6 +464,7 @@ uint16_t GT5X::empty_database(void) {
     return params;
 }
 
+/* For 1:1 matching */
 uint16_t GT5X::verify_finger_with_template(uint16_t fid) {
     uint16_t cmd = GT5X_VERIFY1_1;
     uint32_t params = fid;
