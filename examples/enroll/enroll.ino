@@ -18,7 +18,7 @@
 #endif
 
 GT5X finger(&fserial);
-GT5X_DeviceInfo info;
+GT5X_DeviceInfo ginfo;
 
 void setup()
 {
@@ -32,9 +32,9 @@ void setup()
         fserial.begin(9600);
     #endif
 
-    if (finger.begin(&info)) {
+    if (finger.begin(&ginfo)) {
         Serial.println("Found fingerprint sensor!");
-        Serial.print("Firmware Version: "); Serial.println(info.fwversion, HEX);
+        Serial.print("Firmware Version: "); Serial.println(ginfo.fwversion, HEX);
     } else {
         Serial.println("Did not find fingerprint sensor :(");
         while (1) yield();
@@ -120,8 +120,14 @@ void enroll_finger(uint16_t fid) {
                 Serial.print("Scan "); Serial.print(scan);
                 Serial.println(" complete.");
                 break;
+            case GT5X_NACK_ENROLL_FAILED:
+                Serial.print("Enrollment failed.");
+                return;
+            case GT5X_NACK_BAD_FINGER:
+                Serial.print("Fingerprint unclear.");
+                return;
             default:
-                Serial.print("Error code: 0x"); Serial.println(p, HEX);
+                Serial.print("Print already exists at ID "); Serial.println(p);
                 return;
         }
 

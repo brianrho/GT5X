@@ -41,7 +41,8 @@
 #define GT5X_GETDATABASESTART               0x72    
 #define GT5X_GETDATABASEEND                 0x73    
 #define GT5X_UPGRADEFIRMWARE                0x80    
-#define GT5X_UPGRADEISOCDIMAGE              0x81    
+#define GT5X_UPGRADEISOCDIMAGE              0x81
+   
 #define GT5X_ACK                            0x30    
 #define GT5X_NACK                           0x31    
 
@@ -115,7 +116,10 @@ class GT5X {
         bool is_pressed(void);
         uint16_t delete_id(uint16_t fid);
         uint16_t empty_database(void);
+        
+        /* 1:! match between a saved template and a presented finger */
         uint16_t verify_finger_with_template(uint16_t fid);
+        
         uint16_t search_database(uint16_t * fid);
         uint16_t capture_finger(bool highquality = false);
         

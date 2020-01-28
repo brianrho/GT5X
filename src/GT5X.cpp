@@ -539,7 +539,7 @@ uint16_t GT5X::get_image(void) {
 
 uint16_t GT5X::set_template(uint16_t fid, uint8_t check_duplicate) {
     uint16_t cmd = GT5X_SETTEMPLATE;
-    uint32_t params = check_duplicate ? fid : (fid & 0xff000000);
+    uint32_t params = check_duplicate ? fid : (fid | 0xff000000);
     
     write_cmd_packet(cmd, params);
     uint16_t rc = get_cmd_response(&params);

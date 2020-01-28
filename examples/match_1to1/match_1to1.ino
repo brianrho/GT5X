@@ -17,7 +17,7 @@
 #endif
 
 GT5X finger(&fserial);
-GT5X_DeviceInfo info;
+GT5X_DeviceInfo ginfo;
 
 void setup()
 {
@@ -31,9 +31,9 @@ void setup()
         fserial.begin(9600);
     #endif
 
-    if (finger.begin(&info)) {
+    if (finger.begin(&ginfo)) {
         Serial.println("Found fingerprint sensor!");
-        Serial.print("Firmware Version: "); Serial.println(info.fwversion, HEX);
+        Serial.print("Firmware Version: "); Serial.println(ginfo.fwversion, HEX);
     } else {
         Serial.println("Did not find fingerprint sensor :(");
         while (1) yield();
